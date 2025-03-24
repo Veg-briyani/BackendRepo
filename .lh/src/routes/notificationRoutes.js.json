@@ -1,0 +1,22 @@
+{
+    "sourceFile": "src/routes/notificationRoutes.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1741462280286,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1741463348718,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,11 +9,11 @@\n router.post('/admin', \n   auth, \n   authorizeRole(['admin']), \n   [\n-    check('userIds')\n-      .isArray()\n-      .withMessage('Invalid user IDs format'),\n+    check('authorId')\n+      .isMongoId()\n+      .withMessage('Invalid author ID format'),\n     check('message')\n       .trim()\n       .notEmpty()\n       .withMessage('Message content is required')\n@@ -26,24 +26,30 @@\n       if (!errors.isEmpty()) {\n         return res.status(400).json({ errors: errors.array() });\n       }\n \n-      const { userIds, message } = req.body;\n+      const { authorId, message } = req.body;\n       \n-      const notifications = userIds.map(userId => ({\n-        recipient: userId,\n+      const author = await User.findById(authorId);\n+      if (!author) {\n+        return res.status(404).json({ message: 'Author not found' });\n+      }\n+\n+      const notification = new Notification({\n+        recipient: authorId,\n         message,\n         type: 'admin'\n-      }));\n-      await Notification.insertMany(notifications);\n+      });\n \n+      await notification.save();\n+\n       res.status(201).json({\n-        message: 'Notifications sent',\n-        notifications\n+        message: 'Notification sent',\n+        notification\n       });\n     } catch (error) {\n       res.status(500).json({ \n-        message: 'Error sending notifications',\n+        message: 'Error sending notification',\n         error: error.message \n       });\n     }\n   });\n"
+                }
+            ],
+            "date": 1741462280286,
+            "name": "Commit-0",
+            "content": "const express = require('express');\nconst router = express.Router();\nconst { auth, authorizeRole } = require('../middleware/auth');\nconst Notification = require('../models/Notification');\nconst User = require('../models/User');\nconst { check, validationResult } = require('express-validator');\n\n// Send admin notification\nrouter.post('/admin', \n  auth, \n  authorizeRole(['admin']), \n  [\n    check('userIds')\n      .isArray()\n      .withMessage('Invalid user IDs format'),\n    check('message')\n      .trim()\n      .notEmpty()\n      .withMessage('Message content is required')\n      .escape()\n  ],\n  async (req, res) => {\n    try {\n      // Validate input\n      const errors = validationResult(req);\n      if (!errors.isEmpty()) {\n        return res.status(400).json({ errors: errors.array() });\n      }\n\n      const { userIds, message } = req.body;\n      \n      const notifications = userIds.map(userId => ({\n        recipient: userId,\n        message,\n        type: 'admin'\n      }));\n      await Notification.insertMany(notifications);\n\n      res.status(201).json({\n        message: 'Notifications sent',\n        notifications\n      });\n    } catch (error) {\n      res.status(500).json({ \n        message: 'Error sending notifications',\n        error: error.message \n      });\n    }\n  });\n\n// Get user notifications\nrouter.get('/', auth, async (req, res) => {\n  try {\n    const notifications = await Notification.find({ recipient: req.user._id })\n      .sort({ createdAt: -1 })\n      .limit(50);\n\n    res.json(notifications);\n  } catch (error) {\n    res.status(500).json({ \n      message: 'Error fetching notifications',\n      error: error.message \n    });\n  }\n});\n\n// Mark as read\nrouter.put('/:id/read', auth, async (req, res) => {\n  try {\n    const notification = await Notification.findOneAndUpdate(\n      { _id: req.params.id, recipient: req.user._id },\n      { $set: { read: true } },\n      { new: true }\n    );\n\n    if (!notification) {\n      return res.status(404).json({ message: 'Notification not found' });\n    }\n\n    res.json(notification);\n  } catch (error) {\n    res.status(500).json({ \n      message: 'Error updating notification',\n      error: error.message \n    });\n  }\n});\n\nmodule.exports = router; "
+        }
+    ]
+}

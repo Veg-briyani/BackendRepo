@@ -1,0 +1,22 @@
+{
+    "sourceFile": "src/App.jsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1741471988954,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1741472051289,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,37 +1,1 @@\n-import { BrowserRouter, Routes, Route } from 'react-router-dom';\n-import { ThemeProvider, createTheme } from '@mui/material';\n-import { SnackbarProvider } from 'notistack';\n-import AuthLayout from './layouts/AuthLayout';\n-import AdminLayout from './layouts/AdminLayout';\n-import Login from './pages/Login';\n-import Dashboard from './pages/admin/Dashboard';\n-import Users from './pages/admin/Users';\n-import Books from './pages/admin/Books';\n-import Orders from './pages/admin/Orders';\n-\n-const theme = createTheme({\n-  // Custom theme configuration\n-});\n-\n-export default function App() {\n-  return (\n-    <ThemeProvider theme={theme}>\n-      <SnackbarProvider maxSnack={3}>\n-        <BrowserRouter>\n-          <Routes>\n-            <Route element={<AuthLayout />}>\n-              <Route path=\"/login\" element={<Login />} />\n-            </Route>\n-            \n-            <Route element={<AdminLayout />}>\n-              <Route path=\"/\" element={<Dashboard />} />\n-              <Route path=\"/users\" element={<Users />} />\n-              <Route path=\"/books\" element={<Books />} />\n-              <Route path=\"/orders\" element={<Orders />} />\n-            </Route>\n-          </Routes>\n-        </BrowserRouter>\n-      </SnackbarProvider>\n-    </ThemeProvider>\n-  );\n-} \n\\ No newline at end of file\n+ \n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1741471988954,
+            "name": "Commit-0",
+            "content": "import { BrowserRouter, Routes, Route } from 'react-router-dom';\nimport { ThemeProvider, createTheme } from '@mui/material';\nimport { SnackbarProvider } from 'notistack';\nimport AuthLayout from './layouts/AuthLayout';\nimport AdminLayout from './layouts/AdminLayout';\nimport Login from './pages/Login';\nimport Dashboard from './pages/admin/Dashboard';\nimport Users from './pages/admin/Users';\nimport Books from './pages/admin/Books';\nimport Orders from './pages/admin/Orders';\n\nconst theme = createTheme({\n  // Custom theme configuration\n});\n\nexport default function App() {\n  return (\n    <ThemeProvider theme={theme}>\n      <SnackbarProvider maxSnack={3}>\n        <BrowserRouter>\n          <Routes>\n            <Route element={<AuthLayout />}>\n              <Route path=\"/login\" element={<Login />} />\n            </Route>\n            \n            <Route element={<AdminLayout />}>\n              <Route path=\"/\" element={<Dashboard />} />\n              <Route path=\"/users\" element={<Users />} />\n              <Route path=\"/books\" element={<Books />} />\n              <Route path=\"/orders\" element={<Orders />} />\n            </Route>\n          </Routes>\n        </BrowserRouter>\n      </SnackbarProvider>\n    </ThemeProvider>\n  );\n} "
+        }
+    ]
+}

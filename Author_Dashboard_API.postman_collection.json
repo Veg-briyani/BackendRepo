@@ -1,0 +1,843 @@
+{
+  "info": {
+    "name": "Author Dashboard API",
+    "description": "API collection for the Author Dashboard application",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/health"
+      },
+      "response": []
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Author\",\n  \"email\": \"author@example.com\",\n  \"password\": \"password123\",\n  \"phoneNumber\": \"+911234567890\",\n  \"role\": \"author\"\n}"
+            },
+            "url": "{{base_url}}/auth/register"
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.token) {",
+                  "    pm.collectionVariables.set(\"auth_token\", response.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"author@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": "{{base_url}}/auth/login"
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.token) {",
+                  "    pm.collectionVariables.set(\"admin_token\", response.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": "{{base_url}}/auth/login"
+          },
+          "response": []
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"author@example.com\"\n}"
+            },
+            "url": "{{base_url}}/auth/forgot-password"
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"YOUR_RESET_TOKEN\",\n  \"newPassword\": \"newpassword123\"\n}"
+            },
+            "url": "{{base_url}}/auth/reset-password"
+          },
+          "response": []
+        },
+        {
+          "name": "Google Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"GOOGLE_ID_TOKEN\"\n}"
+            },
+            "url": "{{base_url}}/auth/google"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Profile Management",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/auth/profile"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Name\",\n  \"phoneNumber\": \"+919876543210\",\n  \"address\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"Mumbai\",\n    \"state\": \"Maharashtra\",\n    \"country\": \"India\",\n    \"zipCode\": \"400001\"\n  },\n  \"about\": \"Experienced author with multiple publications\",\n  \"bankAccount\": {\n    \"accountNumber\": \"1234567890\",\n    \"ifscCode\": \"SBIN0000123\",\n    \"bankName\": \"State Bank of India\"\n  },\n  \"aadhaarNumber\": \"123456789012\",\n  \"panNumber\": \"ABCDE1234F\"\n}"
+            },
+            "url": "{{base_url}}/auth/profile"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Revenue Data",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"monthlyRevenue\": [1500, 2000, 1800],\n  \"yearlyPerformance\": [\n    {\n      \"year\": 2024,\n      \"monthlyRevenue\": [\n        {\"month\": 1, \"revenue\": 5000},\n        {\"month\": 2, \"revenue\": 6000}\n      ]\n    }\n  ]\n}"
+            },
+            "url": "{{base_url}}/auth/revenue"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Books",
+      "item": [
+        {
+          "name": "Get All Books",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/books?page=1&limit=10&category=Fiction&search=",
+              "host": ["{{base_url}}"],
+              "path": ["books"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "category",
+                  "value": "Fiction"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Book By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/books/{{book_id}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Book",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Book Title\",\n  \"price\": 24.99,\n  \"stock\": 150,\n  \"category\": \"Non-Fiction\",\n  \"marketplaceLinks\": {\n    \"amazon\": \"https://amazon.com/updated-book\",\n    \"flipkart\": \"https://flipkart.com/updated-book\"\n  }\n}"
+            },
+            "url": "{{base_url}}/books/{{book_id}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Book",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/books/{{book_id}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Book Cover",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "coverImage",
+                  "type": "file",
+                  "src": "/path/to/cover.jpg"
+                }
+              ]
+            },
+            "url": "{{base_url}}/books/{{book_id}}/cover"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/books/dashboard"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Print Logs",
+      "item": [
+        {
+          "name": "Create Print Log",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookId\": \"{{book_id}}\",\n  \"printDate\": \"2024-07-15\",\n  \"quantity\": 1000,\n  \"pressName\": \"Quality Press\",\n  \"cost\": 5000,\n  \"edition\": \"First Edition\"\n}"
+            },
+            "url": "{{base_url}}/print-logs"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Print Logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/print-logs"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Print Log By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/print-logs/{{print_log_id}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Print Log",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 1500,\n  \"cost\": 7500\n}"
+            },
+            "url": "{{base_url}}/print-logs/{{print_log_id}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Print Log",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/print-logs/{{print_log_id}}"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Royalties",
+      "item": [
+        {
+          "name": "Request Payout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 5000,\n  \"paymentMethod\": \"bank_transfer\"\n}"
+            },
+            "url": "{{base_url}}/royalties/request"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Payout History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/royalties"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookId\": \"{{book_id}}\",\n  \"quantity\": 2,\n  \"paymentMethod\": \"razorpay\"\n}"
+            },
+            "url": "{{base_url}}/orders"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Author Copy Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookId\": \"{{book_id}}\",\n  \"quantity\": 5,\n  \"paymentMethod\": \"wallet\",\n  \"isAuthorCopy\": true\n}"
+            },
+            "url": "{{base_url}}/orders"
+          },
+          "response": []
+        },
+        {
+          "name": "Razorpay Webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Razorpay-Signature",
+                "value": "{{webhook_signature}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event\": \"payment.captured\",\n  \"payload\": {\n    \"payment\": {\n      \"entity\": {\n        \"id\": \"pay_123\",\n        \"order_id\": \"order_123\"\n      }\n    }\n  }\n}"
+            },
+            "url": "{{base_url}}/orders/razorpay-webhook"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Get Notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/notifications"
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Notification as Read",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/notifications/{{notification_id}}/read"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": "{{base_url}}/admin/users"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated User Name\",\n  \"role\": \"author\",\n  \"kycStatus\": \"approved\",\n  \"bankAccount\": {\n    \"accountNumber\": \"9876543210\",\n    \"ifscCode\": \"HDFC0001234\",\n    \"bankName\": \"HDFC Bank\"\n  }\n}"
+            },
+            "url": "{{base_url}}/admin/users/{{user_id}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": "{{base_url}}/admin/users/{{user_id}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Books (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": "{{base_url}}/admin/books"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Author Price",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 9.99\n}"
+            },
+            "url": "{{base_url}}/admin/books/{{book_id}}/author-price"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Pending KYCs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": "{{base_url}}/admin/kyc/pending"
+          },
+          "response": []
+        },
+        {
+          "name": "Approve KYC",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"approved\",\n  \"aadhaarVerified\": true,\n  \"panVerified\": true\n}"
+            },
+            "url": "{{base_url}}/admin/kyc/approve/{{user_id}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Orders (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": "{{base_url}}/admin/orders"
+          },
+          "response": []
+        },
+        {
+          "name": "Approve Royalty Payout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": "{{base_url}}/admin/royalties/{{royalty_id}}/approve"
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Royalty Payout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rejectionReason\": \"Insufficient documentation provided\"\n}"
+            },
+            "url": "{{base_url}}/admin/royalties/{{royalty_id}}/reject"
+          },
+          "response": []
+        },
+        {
+          "name": "Send Admin Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"authorId\": \"{{user_id}}\",\n  \"message\": \"Your book has been approved and is ready for publishing.\"\n}"
+            },
+            "url": "{{base_url}}/notifications/admin"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Book for Author",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"My First Book\",\n  \"price\": 19.99,\n  \"authorId\": \"{{user_id}}\",\n  \"stock\": 100,\n  \"category\": \"Fiction\",\n  \"isbn\": \"978-3-16-148410-0\",\n  \"marketplaceLinks\": {\n    \"amazon\": \"https://amazon.com/book\",\n    \"flipkart\": \"https://flipkart.com/book\"\n  },\n  \"publication\": {\n    \"publicationId\": \"PUB123\",\n    \"publishedDate\": \"2024-01-01\",\n    \"description\": \"A fascinating story about adventure and discovery\"\n  }\n}"
+            },
+            "url": "{{base_url}}/admin/books"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test(\"Response is successful\", function () {",
+          "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+          "});"
+        ]
+      }
+    }
+  ]
+} 

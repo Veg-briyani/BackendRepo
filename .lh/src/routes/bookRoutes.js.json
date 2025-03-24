@@ -1,0 +1,30 @@
+{
+    "sourceFile": "src/routes/bookRoutes.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 3,
+            "patches": [
+                {
+                    "date": 1741462276411,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1741463348720,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -43,14 +43,5 @@\n     });\n   }\n });\n \n-// Enhance GET / endpoint:\n-const { minPrice, maxPrice, category } = req.query;\n-const filter = {\n-  authorId: req.user._id,\n-  ...(minPrice && { price: { $gte: minPrice } }),\n-  ...(maxPrice && { price: { $lte: maxPrice } }),\n-  ...(category && { category })\n-};\n-\n module.exports = router;\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1741466663655,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,8 +11,9 @@\n   getDashboardStats,\n   uploadCoverImage\n } = require('../controllers/bookController');\n const upload = require('../config/multer');\n+const Book = require('../models/book');\n \n // All routes require authentication\n router.use(auth);\n \n@@ -43,5 +44,35 @@\n     });\n   }\n });\n \n+router.put('/:id/author-price', \n+  auth,\n+  async (req, res) => {\n+    try {\n+      const book = await Book.findOneAndUpdate(\n+        { \n+          _id: req.params.id,\n+          authorId: req.user._id // Ensure only author can update\n+        },\n+        { $set: { authorCopyPrice: req.body.price } },\n+        { new: true, runValidators: true }\n+      );\n+\n+      if (!book) {\n+        return res.status(404).json({ message: 'Book not found or unauthorized' });\n+      }\n+\n+      res.json({\n+        message: 'Author price updated successfully',\n+        book\n+      });\n+    } catch (error) {\n+      res.status(500).json({\n+        message: 'Error updating author price',\n+        error: error.message\n+      });\n+    }\n+  }\n+);\n+\n module.exports = router;\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1741466873426,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,9 +11,9 @@\n   getDashboardStats,\n   uploadCoverImage\n } = require('../controllers/bookController');\n const upload = require('../config/multer');\n-const Book = require('../models/book');\n+const Book = require('../models/Book');\n \n // All routes require authentication\n router.use(auth);\n \n"
+                }
+            ],
+            "date": 1741462276411,
+            "name": "Commit-0",
+            "content": "const express = require('express');\nconst router = express.Router();\nconst { auth, authorizeRole } = require('../middleware/auth');\nconst { validateBook } = require('../middleware/validation');\nconst {\n  createBook,\n  getBooks,\n  getBookById,\n  updateBook,\n  deleteBook,\n  getDashboardStats,\n  uploadCoverImage\n} = require('../controllers/bookController');\nconst upload = require('../config/multer');\n\n// All routes require authentication\nrouter.use(auth);\n\n// Book CRUD operations\nrouter.post('/', validateBook, createBook);\nrouter.get('/', getBooks);\nrouter.get('/dashboard', getDashboardStats);\nrouter.get('/:id', getBookById);\nrouter.put('/:id', validateBook, updateBook);\nrouter.put('/:id/cover',\n  authorizeRole(['admin']),\n  upload.single('coverImage'),\n  uploadCoverImage\n);\nrouter.delete('/:id', deleteBook);\n\n// Admin routes\nrouter.get('/admin/all', authorizeRole(['admin']), async (req, res) => {\n  try {\n    const books = await Book.find()\n      .populate('authorId', 'name email')\n      .sort({ createdAt: -1 });\n    res.json(books);\n  } catch (error) {\n    res.status(500).json({\n      message: 'Error fetching all books',\n      error: error.message\n    });\n  }\n});\n\n// Enhance GET / endpoint:\nconst { minPrice, maxPrice, category } = req.query;\nconst filter = {\n  authorId: req.user._id,\n  ...(minPrice && { price: { $gte: minPrice } }),\n  ...(maxPrice && { price: { $lte: maxPrice } }),\n  ...(category && { category })\n};\n\nmodule.exports = router;"
+        }
+    ]
+}

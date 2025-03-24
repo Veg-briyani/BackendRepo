@@ -1,0 +1,22 @@
+{
+    "sourceFile": "src/layouts/AdminLayout.jsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1741471994444,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1741472051291,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,19 +1,1 @@\n-import { Outlet } from 'react-router-dom';\n-import { Box, CssBaseline, Toolbar } from '@mui/material';\n-import AdminSidebar from '../components/AdminSidebar';\n-import AdminAppBar from '../components/AdminAppBar';\n-\n-export default function AdminLayout() {\n-  return (\n-    <Box sx={{ display: 'flex' }}>\n-      <CssBaseline />\n-      <AdminAppBar />\n-      <AdminSidebar />\n-      \n-      <Box component=\"main\" sx={{ flexGrow: 1, p: 3 }}>\n-        <Toolbar /> {/* For spacing under app bar */}\n-        <Outlet />\n-      </Box>\n-    </Box>\n-  );\n-} \n\\ No newline at end of file\n+ \n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1741471994444,
+            "name": "Commit-0",
+            "content": "import { Outlet } from 'react-router-dom';\nimport { Box, CssBaseline, Toolbar } from '@mui/material';\nimport AdminSidebar from '../components/AdminSidebar';\nimport AdminAppBar from '../components/AdminAppBar';\n\nexport default function AdminLayout() {\n  return (\n    <Box sx={{ display: 'flex' }}>\n      <CssBaseline />\n      <AdminAppBar />\n      <AdminSidebar />\n      \n      <Box component=\"main\" sx={{ flexGrow: 1, p: 3 }}>\n        <Toolbar /> {/* For spacing under app bar */}\n        <Outlet />\n      </Box>\n    </Box>\n  );\n} "
+        }
+    ]
+}

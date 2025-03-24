@@ -1,0 +1,22 @@
+{
+    "sourceFile": "src/models/Notification.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1741462271694,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1741463348717,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,14 +20,9 @@\n     default: false\n   },\n   metadata: {\n     type: mongoose.Schema.Types.Mixed\n-  },\n-  priority: {\n-    type: String,\n-    enum: ['low', 'medium', 'high']\n-  },\n-  expiration: Date\n+  }\n }, {\n   timestamps: true\n });\n \n"
+                }
+            ],
+            "date": 1741462271694,
+            "name": "Commit-0",
+            "content": "const mongoose = require('mongoose');\n\nconst notificationSchema = new mongoose.Schema({\n  recipient: {\n    type: mongoose.Schema.Types.ObjectId,\n    ref: 'User',\n    required: true\n  },\n  message: {\n    type: String,\n    required: true\n  },\n  type: {\n    type: String,\n    enum: ['payout', 'admin'],\n    default: 'payout'\n  },\n  read: {\n    type: Boolean,\n    default: false\n  },\n  metadata: {\n    type: mongoose.Schema.Types.Mixed\n  },\n  priority: {\n    type: String,\n    enum: ['low', 'medium', 'high']\n  },\n  expiration: Date\n}, {\n  timestamps: true\n});\n\nmodule.exports = mongoose.model('Notification', notificationSchema); "
+        }
+    ]
+}

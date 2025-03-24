@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --background: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #2b2d42;
+            --success: #06d6a0;
+            --warning: #ffd166;
+            --danger: #ef476f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Modern Sidebar */
+        .sidebar {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            box-shadow: 2px 0 12px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            padding: 2rem;
+            display: grid;
+            gap: 2rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        /* Data Tables */
+        .data-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem;
+            background: var(--background);
+            color: var(--text);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+        }
+
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status.approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-icon {
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-book-open"></i>
+                BookAdmin
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    Users
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-book"></i>
+                    Books
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-print"></i>
+                    Print Logs
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-id-card"></i>
+                    KYCs
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>Pending KYCs</h3>
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-value">12</div>
+                    <small>3 new today</small>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>Daily Orders</h3>
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="stat-value">₹42.5K</div>
+                    <small>15% ↑ from yesterday</small>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>Royalties Due</h3>
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="stat-value">₹1.82L</div>
+                    <small>5 pending payouts</small>
+                </div>
+            </div>
+
+            <!-- KYC Approval Table -->
+            <div class="data-card">
+                <div class="table-header">
+                    <h3>Pending KYC Approvals</h3>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-sync"></i>
+                        Refresh
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Documents</th>
+                                <th>Submitted</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>John Doe</td>
+                                <td>
+                                    <div class="documents">
+                                        <button class="btn-icon">
+                                            <i class="fas fa-id-card"></i>
+                                        </button>
+                                        <button class="btn-icon">
+                                            <i class="fas fa-credit-card"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>2 hours ago</td>
+                                <td>
+                                    <span class="status pending">
+                                        <i class="fas fa-clock"></i>
+                                        Pending
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <!-- Add more rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Book Management -->
+            <div class="data-card">
+                <div class="table-header">
+                    <h3>Book Management</h3>
+                    <div class="actions">
+                        <input type="text" placeholder="Search books...">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Add New
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Sample Book Title</td>
+                                <td>₹499</td>
+                                <td>150</td>
+                                <td>
+                                    <span class="status approved">
+                                        <i class="fas fa-check"></i>
+                                        Active
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn-icon">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-icon">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <!-- Add more rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

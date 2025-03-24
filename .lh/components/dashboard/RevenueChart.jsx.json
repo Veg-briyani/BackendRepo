@@ -1,0 +1,22 @@
+{
+    "sourceFile": "components/dashboard/RevenueChart.jsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1741665216595,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1741665543980,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,31 +1,1 @@\n-import React, { useState } from 'react';\n-\n-const [data, setData] = useState({\n-  books: [],\n-  genres: [],\n-  currentMonthGrowth: 0,\n-  totalInventory: 0\n-});\n-const [loading, setLoading] = useState(true);\n-const [error, setError] = useState(null);\n-\n-const fetchData = async () => {\n-  try {\n-    const response = await fetch('/api/books/dashboard', {\n-      headers: {\n-        'Authorization': `Bearer ${localStorage.getItem('token')}`\n-      }\n-    });\n-    \n-    if (!response.ok) {\n-      throw new Error('Failed to fetch data');\n-    }\n-    \n-    const result = await response.json();\n-    setData(result);\n-  } catch (err) {\n-    setError(err.message);\n-  } finally {\n-    setLoading(false);\n-  }\n-}; \n\\ No newline at end of file\n+ \n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1741665216595,
+            "name": "Commit-0",
+            "content": "import React, { useState } from 'react';\n\nconst [data, setData] = useState({\n  books: [],\n  genres: [],\n  currentMonthGrowth: 0,\n  totalInventory: 0\n});\nconst [loading, setLoading] = useState(true);\nconst [error, setError] = useState(null);\n\nconst fetchData = async () => {\n  try {\n    const response = await fetch('/api/books/dashboard', {\n      headers: {\n        'Authorization': `Bearer ${localStorage.getItem('token')}`\n      }\n    });\n    \n    if (!response.ok) {\n      throw new Error('Failed to fetch data');\n    }\n    \n    const result = await response.json();\n    setData(result);\n  } catch (err) {\n    setError(err.message);\n  } finally {\n    setLoading(false);\n  }\n}; "
+        }
+    ]
+}
