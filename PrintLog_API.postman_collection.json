@@ -1,0 +1,444 @@
+{
+  "info": {
+    "name": "Print Log API Collection",
+    "description": "API collection for testing Print Log endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Admin Routes",
+      "item": [
+        {
+          "name": "Get All Print Logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/print-logs/admin/all",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "print-logs", "admin", "all"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(Array.isArray(jsonData)).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Print Log (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/print-logs/admin",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "print-logs", "admin"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"bookId\": \"{{bookId}}\",\n    \"printDate\": \"2024-01-20T00:00:00.000Z\",\n    \"quantity\": 100,\n    \"status\": \"completed\",\n    \"pressName\": \"{{pressName}}\",\n    \"cost\": 100,\n    \"edition\": \"1\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Response has required fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('bookId');",
+                  "    pm.expect(jsonData).to.have.property('authorId');",
+                  "    pm.expect(jsonData).to.have.property('printDate');",
+                  "    pm.expect(jsonData).to.have.property('quantity');",
+                  "    pm.expect(jsonData).to.have.property('status');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Print Log (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/print-logs/admin/{{printLogId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "print-logs", "admin", "{{printLogId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"quantity\": 150,\n    \"status\": \"in-progress\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response reflects updates\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.quantity).to.equal(150);",
+                  "    pm.expect(jsonData.status).to.equal('in-progress');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Print Log (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/print-logs/admin/{{printLogId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "print-logs", "admin", "{{printLogId}}"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Success message received\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.equal('Print log deleted successfully');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Author Routes",
+      "item": [
+        {
+          "name": "Create Print Log",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/print-logs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "print-logs"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"bookId\": \"{{bookId}}\",\n    \"printDate\": \"2024-01-20T00:00:00.000Z\",\n    \"quantity\": 50,\n    \"status\": \"pending\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Response has required fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('bookId');",
+                  "    pm.expect(jsonData).to.have.property('printDate');",
+                  "    pm.expect(jsonData).to.have.property('quantity');",
+                  "    pm.expect(jsonData).to.have.property('status');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Author Print Logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/print-logs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "print-logs"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(Array.isArray(jsonData)).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Single Print Log",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/print-logs/{{printLogId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "print-logs", "{{printLogId}}"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response has required fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('bookId');",
+                  "    pm.expect(jsonData).to.have.property('printDate');",
+                  "    pm.expect(jsonData).to.have.property('quantity');",
+                  "    pm.expect(jsonData).to.have.property('status');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Print Log",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/print-logs/{{printLogId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "print-logs", "{{printLogId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"quantity\": 75,\n    \"status\": \"pending\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response reflects updates\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.quantity).to.equal(75);",
+                  "    pm.expect(jsonData.status).to.equal('pending');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Print Log",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authorToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/print-logs/{{printLogId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "print-logs", "{{printLogId}}"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Success message received\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.equal('Print log deleted successfully');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "Bearer YOUR_ADMIN_TOKEN",
+      "type": "string"
+    },
+    {
+      "key": "authorToken",
+      "value": "Bearer YOUR_AUTHOR_TOKEN",
+      "type": "string"
+    },
+    {
+      "key": "bookId",
+      "value": "YOUR_BOOK_ID",
+      "type": "string"
+    },
+    {
+      "key": "authorId",
+      "value": "YOUR_AUTHOR_ID",
+      "type": "string"
+    },
+    {
+      "key": "printLogId",
+      "value": "YOUR_PRINT_LOG_ID",
+      "type": "string"
+    },
+    {
+      "key": "pressName",
+      "value": "YOUR_PRESS_NAME",
+      "type": "string"
+    }
+  ]
+}

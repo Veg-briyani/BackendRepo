@@ -124,14 +124,17 @@ const validateProfileUpdate = (req, res, next) => {
     profile: Joi.object({
       title: Joi.string(),
       location: Joi.string(),
-      bio: Joi.string()
+      bio: Joi.string(),
+      profilePhoto: Joi.string() // Allow profilePhoto in profile object
     }),
     authorStats: Joi.object({
       numberOfPublications: Joi.number().min(0),
       averageRating: Joi.number().min(0).max(5),
       numberOfFollowers: Joi.number().min(0),
       totalWorks: Joi.number().min(0)
-    }).optional()
+    }).optional(),
+    // Also allow profilePhoto at root level for backward compatibility
+    profilePhoto: Joi.string()
   });
 
   const { error } = schema.validate(req.body);
@@ -140,7 +143,6 @@ const validateProfileUpdate = (req, res, next) => {
   }
   next();
 };
-
 const validateDashboardData = (req, res, next) => {
   const schema = Joi.object({
     totalRoyaltyEarned: Joi.number().min(0),
@@ -333,4 +335,3 @@ module.exports = {
   validateKycUpdateRequest
 };
 
- 

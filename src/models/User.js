@@ -1,3 +1,4 @@
+// src/models/User.js - Update User Schema
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
@@ -41,7 +42,7 @@ const userSchema = new mongoose.Schema({
     }],
     default: [{
       year: new Date().getFullYear(),
-      monthlyRevenue: Array.from({length: 12}, (_, i) => ({
+      monthlyRevenue: Array.from({ length: 12 }, (_, i) => ({
         month: i + 1,
         revenue: 0
       }))
@@ -55,7 +56,7 @@ const userSchema = new mongoose.Schema({
       default: Date.now
     },
     bio: { type: String, default: '' },
-    profilePhoto: { type: String, default: '' }
+    profilePhoto: { type: String, default: '' } // Explicitly defined here
   },
   authorStats: {
     numberOfPublications: { type: Number, default: 0 },
@@ -155,9 +156,9 @@ const userSchema = new mongoose.Schema({
 });
 
 // Hash password before saving
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
-  
+
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
@@ -168,13 +169,13 @@ userSchema.pre('save', async function(next) {
 });
 
 // Method to compare password
-userSchema.methods.comparePassword = async function(candidatePassword) {
+userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
 userSchema.set('toJSON', {
   virtuals: true,
-  transform: function(doc, ret) {
+  transform: function (doc, ret) {
     delete ret.password;
     delete ret.tokens;
     return ret;

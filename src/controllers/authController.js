@@ -201,17 +201,31 @@ const getProfile = async (req, res) => {
     res.status(500).json({ message: 'Error fetching profile' });
   }
 };
-
 const updateProfile = async (req, res) => {
   try {
     const updates = req.body;
-    
+
+    // Handle top-level profilePhoto field by moving it to the profile object
+    if (updates.profilePhoto && typeof updates.profilePhoto === 'string') {
+      // Create profile object if it doesn't exist
+      if (!updates.profile) {
+        updates.profile = {};
+      }
+
+      // Move profilePhoto into the profile object
+      updates.profile.profilePhoto = updates.profilePhoto;
+
+      // Remove the top-level profilePhoto to avoid validation issues
+      delete updates.profilePhoto;
+    }
+
     // Only allow certain fields to be updated
     const allowedUpdates = [
-      'name', 'phoneNumber', 'address', 'bankAccount', 
-      'about', 'profilePhoto', 'governmentId', 'authorStats'
+      'name', 'phoneNumber', 'address', 'bankAccount',
+      'about', 'profilePhoto', 'governmentId', 'authorStats',
+      'profile' // Make sure 'profile' is here to allow updating nested fields
     ];
-    
+
     const filteredUpdates = Object.keys(updates)
       .filter(key => allowedUpdates.includes(key))
       .reduce((obj, key) => {
@@ -224,6 +238,8 @@ const updateProfile = async (req, res) => {
       filteredUpdates.kycStatus = 'pending';
     }
 
+    console.log('Filtered updates being applied:', JSON.stringify(filteredUpdates));
+
     const user = await User.findByIdAndUpdate(
       req.user._id,
       { $set: filteredUpdates },
@@ -235,13 +251,14 @@ const updateProfile = async (req, res) => {
       user
     });
   } catch (error) {
-    res.status(500).json({ 
+    console.error('Profile update error:', error);
+    res.status(500).json({
       message: 'Error updating profile',
-      error: error.message 
+      error: error.message
     });
   }
 };
-
+ 
 const googleLogin = async (req, res) => {
   try {
     const { token } = req.body;

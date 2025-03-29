@@ -1,14 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const { auth } = require('../middleware/auth');
-const { 
-  validateUser, 
-  validateLogin, 
+const {
+  validateUser,
+  validateLogin,
   validateProfileUpdate,
   validateForgotPassword,
   validateResetPassword,
   validateGoogleLogin,
-  validateKycUpdateRequest
+  validateKycUpdateRequest,
+  validatePhotoUpdate
 } = require('../middleware/validation');
 const {
   register,
@@ -17,6 +18,7 @@ const {
   resetPassword,
   getProfile,
   updateProfile,
+  updateProfilePhoto,
   googleLogin
 } = require('../controllers/authController');
 const KycUpdateRequest = require('../models/KycUpdateRequest');
@@ -31,6 +33,7 @@ router.post('/google-login', validateGoogleLogin, googleLogin);
 // Protected routes
 router.get('/profile', auth, getProfile);
 router.put('/profile', auth, validateProfileUpdate, updateProfile);
+
 
 // Submit KYC update request
 router.post('/kyc/update-request', auth, validateKycUpdateRequest, async (req, res) => {
@@ -50,7 +53,7 @@ router.post('/kyc/update-request', auth, validateKycUpdateRequest, async (req, r
     });
 
     await newRequest.save();
-    
+
     res.status(201).json({
       message: 'KYC update request submitted for review',
       requestId: newRequest._id

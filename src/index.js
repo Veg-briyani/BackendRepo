@@ -14,6 +14,7 @@ const printLogRoutes = require('./routes/printLogRoutes');
 const royaltyRoutes = require('./routes/royaltyRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const authorRoutes = require('./routes/authorRoutes');
 
 // Initialize express app
 const app = express();
@@ -59,11 +60,12 @@ app.use('/api/print-logs', printLogRoutes);
 app.use('/api/royalties', royaltyRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/author', authorRoutes);
 
 // Health check route - Move this BEFORE the 404 handler
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'ok', 
+  res.status(200).json({
+    status: 'ok',
     message: 'Server is running',
     timestamp: new Date().toISOString(),
     uptime: process.uptime()
@@ -80,20 +82,20 @@ app.use((req, res) => {
 // Error handling middleware - Keep this last
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  
+
   if (err.name === 'ValidationError') {
     return res.status(400).json({
       message: 'Validation Error',
       errors: Object.values(err.errors).map(e => e.message)
     });
   }
-  
+
   if (err.name === 'JsonWebTokenError') {
     return res.status(401).json({
       message: 'Invalid authentication token'
     });
   }
-  
+
   if (err.name === 'TokenExpiredError') {
     return res.status(401).json({
       message: 'Authentication token expired'
