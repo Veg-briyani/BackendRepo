@@ -1,0 +1,191 @@
+{
+  "info": {
+    "name": "Maximus API - Orders",
+    "description": "Order management endpoints for Maximus Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Orders - Author Operations",
+      "description": "Order operations for authors",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"book\": \"BOOK_ID_HERE\",\n    \"quantity\": 10,\n    \"shippingAddress\": {\n        \"addressLine1\": \"123 Main St\",\n        \"addressLine2\": \"Apt 4B\",\n        \"city\": \"Mumbai\",\n        \"state\": \"Maharashtra\",\n        \"postalCode\": \"400001\",\n        \"country\": \"India\"\n    },\n    \"paymentMethod\": \"razorpay\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders"]
+            },
+            "description": "Create a new order as an author"
+          }
+        },
+        {
+          "name": "Get My Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/my-orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "my-orders"]
+            },
+            "description": "Get all orders placed by the authenticated author"
+          }
+        },
+        {
+          "name": "Verify Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"orderId\": \"ORDER_ID_HERE\",\n    \"paymentId\": \"RAZORPAY_PAYMENT_ID\",\n    \"signature\": \"RAZORPAY_SIGNATURE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/verify-payment",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "verify-payment"]
+            },
+            "description": "Verify Razorpay payment after completion"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders - Admin Operations",
+      "description": "Order operations for admins",
+      "item": [
+        {
+          "name": "Get All Orders (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/admin",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "admin"]
+            },
+            "description": "Get all orders in the system (admin only)"
+          }
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"Shipped\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/:id/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", ":id", "status"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "ORDER_ID_HERE"
+                }
+              ]
+            },
+            "description": "Update order status (admin only)"
+          }
+        },
+        {
+          "name": "Razorpay Webhook (Server to Server)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-razorpay-signature",
+                "value": "WEBHOOK_SIGNATURE_HERE"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"payload\": {\n        \"payment\": {\n            \"entity\": {\n                \"id\": \"pay_123456789\",\n                \"order_id\": \"order_123456789\",\n                \"amount\": 5000,\n                \"currency\": \"INR\",\n                \"status\": \"captured\"\n            }\n        },\n        \"event\": \"payment.captured\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/razorpay-webhook",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "razorpay-webhook"]
+            },
+            "description": "Webhook endpoint for Razorpay payment notifications"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Print Logs",
+      "description": "Print log operations for admins",
+      "item": [
+        {
+          "name": "Get Print Logs (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/print-logs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "print-logs"]
+            },
+            "description": "Get all print logs (admin only)"
+          }
+        }
+      ]
+    }
+  ]
+}

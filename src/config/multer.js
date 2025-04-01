@@ -4,8 +4,9 @@ const fs = require('fs');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const destPath = 'public/book-covers/';
-    require('fs').mkdirSync(destPath, { recursive: true });
+    // Use absolute path for Render deployment
+    const destPath = path.resolve(process.cwd(), 'public/book-covers/');
+    fs.mkdirSync(destPath, { recursive: true });
     cb(null, destPath);
   },
   filename: (req, file, cb) => {

@@ -208,11 +208,50 @@ const validateAdminUserUpdate = (req, res, next) => {
 
 const validateGoogleLogin = (req, res, next) => {
   const schema = Joi.object({
-    token: Joi.string().required()
+    credential: Joi.string().required(),
+    user: Joi.object().unknown(true).optional(),  // Allow user object with any properties
+    testEmail: Joi.string().email().optional()    // Allow testEmail for development
   });
 
   const { error } = schema.validate(req.body);
-  if (error) return res.status(400).json({ message: error.details[0].message });
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+  next();
+};
+
+const validateRequestOTP = (req, res, next) => {
+  const schema = Joi.object({
+    phoneNumber: Joi.string()
+      .required()
+      .pattern(/^\+?[1-9]\d{1,14}$/)
+      .message('Invalid phone number format')
+  });
+
+  const { error } = schema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+  next();
+};
+
+const validateVerifyOTP = (req, res, next) => {
+  const schema = Joi.object({
+    phoneNumber: Joi.string()
+      .required()
+      .pattern(/^\+?[1-9]\d{1,14}$/)
+      .message('Invalid phone number format'),
+    otp: Joi.string()
+      .required()
+      .length(6)
+      .pattern(/^\d+$/)
+      .message('OTP must be a 6-digit number')
+  });
+
+  const { error } = schema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
   next();
 };
 
@@ -332,6 +371,7 @@ module.exports = {
   validateAuthorPrice,
   validateUserRevenue,
   validateMonthlyRevenueUpdate,
-  validateKycUpdateRequest
+  validateKycUpdateRequest,
+  validateRequestOTP,
+  validateVerifyOTP
 };
-

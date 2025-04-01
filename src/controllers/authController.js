@@ -8,9 +8,11 @@ const {
 } = require('../config/email');
 const { OAuth2Client } = require('google-auth-library');
 const Royalty = require('../models/Royalty');
-const { sendSMS } = require('../services/notificationService');
+const { sendSMS, generateOTP, sendOTP } = require('../services/notificationService');
 
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+// Use the Google Client ID from environment variable
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
@@ -201,6 +203,7 @@ const getProfile = async (req, res) => {
     res.status(500).json({ message: 'Error fetching profile' });
   }
 };
+
 const updateProfile = async (req, res) => {
   try {
     const updates = req.body;
@@ -258,7 +261,7 @@ const updateProfile = async (req, res) => {
     });
   }
 };
- 
+
 const googleLogin = async (req, res) => {
   try {
     const { token } = req.body;
@@ -266,7 +269,7 @@ const googleLogin = async (req, res) => {
     // Verify Google token
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: process.env.GOOGLE_CLIENT_ID
+      audience: GOOGLE_CLIENT_ID
     });
     
     const payload = ticket.getPayload();
@@ -288,6 +291,15 @@ const googleLogin = async (req, res) => {
           photo: payload.picture
         }
       });
+      await user.save();
+    } else if (!user.googleId) {
+      // Update existing user with Google ID if they previously registered with email
+      user.googleId = payload.sub;
+      user.authMethod = 'google';
+      user.verified = true;
+      if (payload.picture && !user.profile.photo) {
+        user.profile.photo = payload.picture;
+      }
       await user.save();
     }
 
@@ -351,6 +363,105 @@ const requestPayout = async (req, res) => {
   }
 };
 
+const requestOTP = async (req, res) => {
+  try {
+    const { phoneNumber } = req.body;
+    
+    if (!phoneNumber) {
+      return res.status(400).json({ message: 'Phone number is required' });
+    }
+    
+    // Generate OTP
+    const otp = generateOTP();
+    const expiresAt = new Date(Date.now() + (process.env.OTP_EXPIRY_TIME || 300000)); // 5 minutes expiry
+    
+    // Find user by phone number
+    let user = await User.findOne({ phoneNumber });
+    
+    if (!user) {
+      // If user doesn't exist with this phone, create a new one
+      user = new User({
+        name: 'New User', // Can be updated later
+        email: `${phoneNumber}@temporary.com`, // Temporary email
+        phoneNumber,
+        password: Math.random().toString(36).slice(-10), // Random password
+        authMethod: 'otp'
+      });
+    }
+    
+    // Update user with OTP
+    user.otp = {
+      code: otp,
+      expiresAt
+    };
+    
+    await user.save();
+    
+    // Send OTP via SMS
+    const smsResult = await sendOTP(phoneNumber, otp);
+    
+    if (!smsResult.success) {
+      return res.status(500).json({ message: 'Failed to send OTP', error: smsResult.error });
+    }
+    
+    res.json({ 
+      message: 'OTP sent successfully',
+      expiresAt
+    });
+    
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Error generating OTP',
+      error: error.message
+    });
+  }
+};
+
+const verifyOTP = async (req, res) => {
+  try {
+    const { phoneNumber, otp } = req.body;
+    
+    if (!phoneNumber || !otp) {
+      return res.status(400).json({ message: 'Phone number and OTP are required' });
+    }
+    
+    // Find user by phone number
+    const user = await User.findOne({ 
+      phoneNumber,
+      'otp.code': otp,
+      'otp.expiresAt': { $gt: new Date() }
+    });
+    
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid or expired OTP' });
+    }
+    
+    // Clear OTP
+    user.otp = undefined;
+    user.verified = true;
+    await user.save();
+    
+    // Generate JWT
+    const token = generateToken(user._id);
+    
+    // Return user data
+    const userData = user.toObject();
+    delete userData.password;
+    
+    res.json({
+      message: 'OTP verification successful',
+      user: userData,
+      token
+    });
+    
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Error verifying OTP',
+      error: error.message
+    });
+  }
+};
+
 exports.refreshToken = async (req, res) => {
   try {
     const refreshToken = req.cookies.refreshToken;
@@ -382,5 +493,7 @@ module.exports = {
   updateProfile,
   googleLogin,
   requestPayout,
-  refreshToken: exports.refreshToken
+  refreshToken: exports.refreshToken,
+  requestOTP,
+  verifyOTP
 };

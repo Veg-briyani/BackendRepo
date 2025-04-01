@@ -1,0 +1,347 @@
+{
+  "info": {
+    "name": "Maximus API - Admin",
+    "description": "Admin endpoints for Maximus Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Admin - User Management",
+      "description": "User management endpoints for admins",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users"]
+            },
+            "description": "Get all users (admin only)"
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "USER_ID_HERE"
+                }
+              ]
+            },
+            "description": "Get specific user by ID (admin only)"
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Updated User Name\",\n    \"email\": \"updated@example.com\",\n    \"phoneNumber\": \"+919876543210\",\n    \"role\": \"author\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "USER_ID_HERE"
+                }
+              ]
+            },
+            "description": "Update user (admin only)"
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "USER_ID_HERE"
+                }
+              ]
+            },
+            "description": "Delete user and associated books (admin only)"
+          }
+        },
+        {
+          "name": "Update User Revenue",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"monthlyRevenue\": 50000,\n    \"yearlyPerformance\": {\n        \"2023\": {\n            \"january\": 5000,\n            \"february\": 6000,\n            \"march\": 7000\n        }\n    }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/:id/revenue",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", ":id", "revenue"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "USER_ID_HERE"
+                }
+              ]
+            },
+            "description": "Update user revenue data (admin only)"
+          }
+        },
+        {
+          "name": "Update Monthly Revenue",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"amount\": 7500\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/:userId/yearlyPerformance/:year/monthlyRevenue/:month",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", ":userId", "yearlyPerformance", ":year", "monthlyRevenue", ":month"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "USER_ID_HERE"
+                },
+                {
+                  "key": "year",
+                  "value": "2023"
+                },
+                {
+                  "key": "month",
+                  "value": "april"
+                }
+              ]
+            },
+            "description": "Update specific month revenue for user (admin only)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - KYC Management",
+      "description": "KYC management endpoints for admins",
+      "item": [
+        {
+          "name": "Get Pending KYCs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/kyc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "kyc"]
+            },
+            "description": "Get all pending KYC applications (admin only)"
+          }
+        },
+        {
+          "name": "Get KYC Update Requests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/kyc/update-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "kyc", "update-requests"]
+            },
+            "description": "Get pending KYC update requests (admin only)"
+          }
+        },
+        {
+          "name": "Approve KYC",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"approved\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/kyc/approve/:userId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "kyc", "approve", ":userId"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "USER_ID_HERE"
+                }
+              ]
+            },
+            "description": "Approve a user's KYC application (admin only)"
+          }
+        },
+        {
+          "name": "Reject KYC",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"rejected\",\n    \"rejectionReason\": \"Documents unclear or incomplete\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/kyc/approve/:userId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "kyc", "approve", ":userId"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "USER_ID_HERE"
+                }
+              ]
+            },
+            "description": "Reject a user's KYC application with reason (admin only)"
+          }
+        },
+        {
+          "name": "Approve KYC Update Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/kyc/update-requests/:id/approve",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "kyc", "update-requests", ":id", "approve"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "REQUEST_ID_HERE"
+                }
+              ]
+            },
+            "description": "Approve KYC update request (admin only)"
+          }
+        },
+        {
+          "name": "Reject KYC Update Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"rejectionReason\": \"Documents unclear or incomplete\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/kyc/update-requests/:id/reject",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "kyc", "update-requests", ":id", "reject"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "REQUEST_ID_HERE"
+                }
+              ]
+            },
+            "description": "Reject KYC update request with reason (admin only)"
+          }
+        }
+      ]
+    }
+  ]
+}

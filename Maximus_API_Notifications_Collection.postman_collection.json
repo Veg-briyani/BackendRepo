@@ -1,0 +1,223 @@
+{
+  "info": {
+    "name": "Maximus API - Notifications",
+    "description": "Notification endpoints for Maximus Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Notifications - Author Operations",
+      "description": "Notification operations for authors",
+      "item": [
+        {
+          "name": "Get My Notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications"]
+            },
+            "description": "Get all notifications for the authenticated user"
+          }
+        },
+        {
+          "name": "Get Filtered Notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/filtered?type=payout&read=false&page=1&limit=20&search=royalty",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications", "filtered"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "payout",
+                  "description": "Filter by notification type (payout, admin, system, kyc, order, author, other, all)"
+                },
+                {
+                  "key": "read",
+                  "value": "false",
+                  "description": "Filter by read status (true/false)"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Number of items per page"
+                },
+                {
+                  "key": "search",
+                  "value": "royalty",
+                  "description": "Search term for notification content"
+                }
+              ]
+            },
+            "description": "Get filtered notifications with pagination"
+          }
+        },
+        {
+          "name": "Get Unread Count",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/unread-count",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications", "unread-count"]
+            },
+            "description": "Get count of unread notifications"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications - Admin Operations",
+      "description": "Notification operations for admins",
+      "item": [
+        {
+          "name": "Send Admin Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"authorId\": \"AUTHOR_ID_HERE\",\n    \"title\": \"Important Update\",\n    \"message\": \"Your royalty payment has been processed\",\n    \"type\": \"payout\",\n    \"data\": {\n        \"payoutId\": \"PAYOUT_ID_HERE\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/admin",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications", "admin"]
+            },
+            "description": "Send notification to a specific author (admin only)"
+          }
+        },
+        {
+          "name": "Send Bulk Notifications",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"recipients\": [\"AUTHOR_ID_1\", \"AUTHOR_ID_2\", \"AUTHOR_ID_3\"],\n    \"title\": \"System Maintenance\",\n    \"message\": \"The system will be under maintenance from 2AM to 4AM tomorrow\",\n    \"type\": \"system\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/bulk",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications", "bulk"]
+            },
+            "description": "Send notifications to multiple authors at once (admin only)"
+          }
+        },
+        {
+          "name": "Get Admin Notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/admin?type=all&read=false&page=1&limit=20&search=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications", "admin"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "all",
+                  "description": "Filter by notification type"
+                },
+                {
+                  "key": "read",
+                  "value": "false",
+                  "description": "Filter by read status"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Number of items per page"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search term for notification content"
+                }
+              ]
+            },
+            "description": "Get admin dashboard notifications with filtering (admin only)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notification History",
+      "description": "Notification history operations",
+      "item": [
+        {
+          "name": "Get Notification History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notification-history",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notification-history"]
+            },
+            "description": "Get notification history"
+          }
+        }
+      ]
+    }
+  ]
+}

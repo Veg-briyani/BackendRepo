@@ -3,16 +3,22 @@ const User = require('../models/User');
 
 const createBook = async (req, res) => {
   try {
+    // If user is admin and authorId is provided in the request, use that authorId
+    // Otherwise use the logged-in user's ID
+    const authorId = (req.user.role === 'admin' && req.body.authorId) 
+      ? req.body.authorId 
+      : req.user._id;
+    
     const bookData = {
       ...req.body,
-      authorId: req.user._id
+      authorId: authorId
     };
 
     const book = new Book(bookData);
     await book.save();
 
     // Update author's stats
-    await User.findByIdAndUpdate(req.user._id, {
+    await User.findByIdAndUpdate(authorId, {
       $inc: {
         'authorStats.numberOfPublications': 1,
         'authorStats.totalWorks': 1

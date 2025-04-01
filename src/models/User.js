@@ -17,7 +17,10 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true
+    required: function() {
+      // Make password optional when using Google or OTP authentication
+      return this.authMethod === 'email';
+    }
   },
   role: {
     type: String,
@@ -133,7 +136,7 @@ const userSchema = new mongoose.Schema({
   about: String,
   authMethod: {
     type: String,
-    enum: ['email', 'phone', 'google'],
+    enum: ['email', 'phone', 'google', 'otp'],
     default: 'email'
   },
   walletBalance: {
@@ -150,6 +153,19 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
     min: 0
+  },
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
+  verified: {
+    type: Boolean,
+    default: false
+  },
+  otp: {
+    code: String,
+    expiresAt: Date
   }
 }, {
   timestamps: true
@@ -157,7 +173,7 @@ const userSchema = new mongoose.Schema({
 
 // Hash password before saving
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
+  if (!this.isModified('password') || !this.password) return next();
 
   try {
     const salt = await bcrypt.genSalt(10);
@@ -170,6 +186,7 @@ userSchema.pre('save', async function (next) {
 
 // Method to compare password
 userSchema.methods.comparePassword = async function (candidatePassword) {
+  if (!this.password) return false;
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
@@ -178,6 +195,7 @@ userSchema.set('toJSON', {
   transform: function (doc, ret) {
     delete ret.password;
     delete ret.tokens;
+    delete ret.otp;
     return ret;
   }
 });

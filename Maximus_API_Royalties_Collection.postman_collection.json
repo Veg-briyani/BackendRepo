@@ -1,0 +1,237 @@
+{
+  "info": {
+    "name": "Maximus API - Royalties and Fake Purchases",
+    "description": "Royalty management and fake purchase endpoints for Maximus Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Royalties",
+      "description": "Royalty management operations",
+      "item": [
+        {
+          "name": "Get Payouts History (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/payouts/history",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "payouts", "history"]
+            },
+            "description": "Get all royalty payout history (admin only)"
+          }
+        },
+        {
+          "name": "Approve Royalty Payout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/royalties/:id/approve",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "royalties", ":id", "approve"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "ROYALTY_ID_HERE"
+                }
+              ]
+            },
+            "description": "Approve a royalty payout request (admin only)"
+          }
+        },
+        {
+          "name": "Reject Royalty Payout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"rejectionReason\": \"Bank account information invalid\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/royalties/:id/reject",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "royalties", ":id", "reject"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "ROYALTY_ID_HERE"
+                }
+              ]
+            },
+            "description": "Reject a royalty payout request (admin only)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fake Purchases (Admin)",
+      "description": "Fake purchase operations for admin",
+      "item": [
+        {
+          "name": "Get All Fake Purchases",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/fake-purchases",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "fake-purchases"]
+            },
+            "description": "Get all fake purchases (admin only)"
+          }
+        },
+        {
+          "name": "Get Fake Purchase by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/fake-purchases/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "fake-purchases", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "FAKE_PURCHASE_ID_HERE"
+                }
+              ]
+            },
+            "description": "Get a specific fake purchase by ID (admin only)"
+          }
+        },
+        {
+          "name": "Create Fake Purchase",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"authorId\": \"AUTHOR_ID_HERE\",\n    \"bookId\": \"BOOK_ID_HERE\",\n    \"quantity\": 10,\n    \"purchaseDate\": \"2023-04-01T12:00:00Z\",\n    \"notes\": \"Bulk purchase for library\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/fake-purchases",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "fake-purchases"]
+            },
+            "description": "Create a new fake purchase record (admin only)"
+          }
+        },
+        {
+          "name": "Update Fake Purchase",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"quantity\": 15,\n    \"notes\": \"Updated bulk purchase for library\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/fake-purchases/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "fake-purchases", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "FAKE_PURCHASE_ID_HERE"
+                }
+              ]
+            },
+            "description": "Update an existing fake purchase record (admin only)"
+          }
+        },
+        {
+          "name": "Delete Fake Purchase",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/fake-purchases/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "fake-purchases", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "FAKE_PURCHASE_ID_HERE"
+                }
+              ]
+            },
+            "description": "Delete a fake purchase record (admin only)"
+          }
+        },
+        {
+          "name": "Get Authors for Dropdown",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/authors",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "authors"]
+            },
+            "description": "Get list of authors for dropdown selection (admin only)"
+          }
+        }
+      ]
+    }
+  ]
+}

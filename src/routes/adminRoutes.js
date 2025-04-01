@@ -51,7 +51,12 @@ router.put('/users/:id', async (req, res) => {
   try {
     const updates = req.body;
     delete updates.password; // Prevent password update through this route
-
+    
+    // Check if we need to update book royalties
+    const updateRoyaltyReceived = updates.royaltyReceived !== undefined;
+    const updateOutstandingRoyalty = updates.outstandingRoyalty !== undefined;
+    const updateWalletBalance = updates.walletBalance !== undefined;
+    
     const user = await User.findByIdAndUpdate(
       req.params.id,
       { $set: updates },
@@ -60,6 +65,88 @@ router.put('/users/:id', async (req, res) => {
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // If royaltyReceived, outstandingRoyalty, or walletBalance was updated, update related book fields
+    if (updateRoyaltyReceived || updateOutstandingRoyalty || updateWalletBalance) {
+      try {
+        // Get all books by this author
+        const books = await Book.find({ authorId: req.params.id });
+        
+        if (books.length > 0) {
+          // Update books based on which fields were changed
+          await Promise.all(books.map(book => {
+            const bookUpdates = {};
+            
+            // If royaltyReceived was updated, distribute it equally among books as "royalties"
+            if (updateRoyaltyReceived) {
+              bookUpdates.royalties = req.body.royaltyReceived / books.length;
+            }
+            
+            // If outstandingRoyalty was updated, adjust soldCopies to match the formula
+            if (updateOutstandingRoyalty) {
+              // We need to adjust book fields to match the outstandingRoyalty formula:
+              // outstandingRoyalty = (soldCopies * price * 0.7 - royalties)
+              
+              // If we also updated royalties in this request, use that value
+              const bookRoyalties = updateRoyaltyReceived 
+                ? (req.body.royaltyReceived / books.length) 
+                : book.royalties;
+                
+              // Calculate what soldCopies needs to be to achieve the desired outstandingRoyalty
+              const outstandingPerBook = req.body.outstandingRoyalty / books.length;
+              const targetSoldCopies = Math.round(
+                (outstandingPerBook + bookRoyalties) / (book.price * 0.7)
+              );
+              
+              bookUpdates.soldCopies = Math.max(0, targetSoldCopies); // Ensure it's not negative
+            }
+            
+            // Only update if we have changes
+            return Object.keys(bookUpdates).length > 0
+              ? Book.findByIdAndUpdate(book._id, bookUpdates, { new: true })
+              : Promise.resolve(book);
+          }));
+        }
+        
+        // Additional step: If the royaltyReceived was updated, we should update any related royalty entries
+        if (updateRoyaltyReceived) {
+          try {
+            // Get Royalty model if it exists
+            const Royalty = require('../models/Royalty');
+            
+            // Create or update a completed royalty record to reflect the total
+            const existingRoyalty = await Royalty.findOne({ 
+              authorId: req.params.id,
+              status: 'completed'
+            });
+            
+            if (existingRoyalty) {
+              await Royalty.findByIdAndUpdate(
+                existingRoyalty._id,
+                { amount: req.body.royaltyReceived },
+                { new: true }
+              );
+            } else {
+              // Create a new royalty record if one doesn't exist
+              const newRoyalty = new Royalty({
+                authorId: req.params.id,
+                amount: req.body.royaltyReceived,
+                status: 'completed',
+                payoutDate: new Date(),
+                description: 'Administrative adjustment'
+              });
+              await newRoyalty.save();
+            }
+          } catch (err) {
+            console.error('Error updating royalty records:', err);
+            // Continue even if this fails
+          }
+        }
+      } catch (bookError) {
+        console.error('Error updating book data:', bookError);
+        // Continue with the response even if book update fails
+      }
     }
 
     res.json({
@@ -203,7 +290,7 @@ router.get('/kyc', async (req, res) => {
 router.post('/royalties/:id/approve', async (req, res) => {
   try {
     const royalty = await Royalty.findById(req.params.id)
-      .populate('authorId', 'name email');
+      .populate('authorId', 'name email walletBalance outstandingRoyalty royaltyReceived');
     
     if (!royalty) {
       return res.status(404).json({ message: 'Payout not found' });
@@ -213,10 +300,51 @@ router.post('/royalties/:id/approve', async (req, res) => {
       return res.status(400).json({ message: 'Payout already processed' });
     }
 
+    // Get the author
+    const author = await User.findById(royalty.authorId._id);
+    if (!author) {
+      return res.status(404).json({ message: 'Author not found' });
+    }
+
+    // Update author's financial data
+    // Decrease outstanding royalty since this amount is being approved
+    author.outstandingRoyalty = Math.max(0, author.outstandingRoyalty - royalty.amount);
+    await author.save();
+
     // Update payout status
     royalty.status = 'Approved';
     royalty.paymentDate = new Date();
     await royalty.save();
+
+    // Update related books' financial data
+    try {
+      // Get all books by this author
+      const books = await Book.find({ authorId: author._id });
+      
+      if (books.length > 0) {
+        // Distribute the approved royalty amount equally among all author's books
+        const amountPerBook = royalty.amount / books.length;
+        
+        await Promise.all(books.map(book => {
+          // Since we're approving a royalty that was part of outstanding,
+          // we need to adjust the book's calculations accordingly
+          const updatedSoldCopies = Math.max(0, 
+            Math.round((book.royalties + (book.price * 0.7 * book.soldCopies) - amountPerBook) / (book.price * 0.7))
+          );
+          
+          return Book.findByIdAndUpdate(
+            book._id,
+            { 
+              soldCopies: updatedSoldCopies
+            },
+            { new: true }
+          );
+        }));
+      }
+    } catch (bookError) {
+      console.error('Error updating book data:', bookError);
+      // Continue even if book update fails
+    }
 
     // Send notification to author
     const notification = new Notification({
@@ -235,6 +363,7 @@ router.post('/royalties/:id/approve', async (req, res) => {
       royalty 
     });
   } catch (error) {
+    console.error('Error in royalty approval:', error);
     res.status(500).json({ 
       message: 'Error approving payout',
       error: error.message 

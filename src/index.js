@@ -23,7 +23,9 @@ const httpServer = createServer(app);
 // Setup Socket.IO
 const io = new Server(httpServer, {
   cors: {
-    origin: ['http://localhost:5173', 'http://localhost:5174'], // Allow both ports
+    origin: process.env.NODE_ENV === 'production' 
+      ? [process.env.CLIENT_URL] 
+      : ['http://localhost:5173', 'http://localhost:5174'],
     methods: ['GET', 'POST'],
     credentials: true
   }
@@ -35,20 +37,25 @@ connectDB();
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'], // Allow both ports
+  origin: process.env.NODE_ENV === 'production'
+    ? [process.env.CLIENT_URL]
+    : ['http://localhost:5173', 'http://localhost:5174'],
   credentials: true
 }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/book-covers', express.static('public/book-covers'));
+const path = require('path');
+app.use('/book-covers', express.static(path.join(__dirname, '../public/book-covers')));
 
 // Setup Socket.IO handlers
 setupSocket(io);
 
 // Add before routes
 app.options('*', cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  origin: process.env.NODE_ENV === 'production'
+    ? [process.env.CLIENT_URL]
+    : ['http://localhost:5173', 'http://localhost:5174'],
   credentials: true
 }));
 
