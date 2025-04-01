@@ -1,9 +1,9 @@
 const twilio = require('twilio')(
-  process.env.TWILIO_ACCOUNT_SID || 'AC24585ea056747d4d795dbe4db617dcc3',
-  process.env.TWILIO_AUTH_TOKEN || '86f931253b7906ad487499ea53088eb6'
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
 );
 
-const TWILIO_PHONE = process.env.TWILIO_PHONE_NUMBER || '+18577998044';
+const TWILIO_PHONE = process.env.TWILIO_PHONE_NUMBER;
 
 exports.sendSMS = async (to, message) => {
   try {
