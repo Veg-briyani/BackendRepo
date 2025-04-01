@@ -1,18 +1,18 @@
-const twilio = require('twilio')(
+require('dotenv').config();
+const twilio = require('twilio');
+const client = new twilio(
   process.env.TWILIO_ACCOUNT_SID,
   process.env.TWILIO_AUTH_TOKEN
 );
-
-const TWILIO_PHONE = process.env.TWILIO_PHONE_NUMBER;
 
 exports.sendSMS = async (to, message) => {
   try {
     // Ensure phone number has correct format
     const formattedPhone = to.startsWith('+') ? to : `+${to}`;
     
-    await twilio.messages.create({
+    await client.messages.create({
       body: message,
-      from: TWILIO_PHONE,
+      from: process.env.TWILIO_PHONE_NUMBER,
       to: formattedPhone
     });
     
