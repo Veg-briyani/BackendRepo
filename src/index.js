@@ -5,6 +5,7 @@ const { createServer } = require('http');
 const { Server } = require('socket.io');
 const connectDB = require('./config/database');
 const setupSocket = require('./socket');
+const path = require('path');
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
@@ -20,42 +21,50 @@ const authorRoutes = require('./routes/authorRoutes');
 const app = express();
 const httpServer = createServer(app);
 
-// Setup Socket.IO
+// Parse allowed origins from .env
+const allowedOrigins = process.env.ALLOWED_CLIENTS.split(",").map(origin => origin.trim());
+
+// Setup CORS for Express
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+}));
+
+// Setup Socket.IO with CORS
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.NODE_ENV === 'production' 
-      ? [process.env.CLIENT_URL] 
-      : ['http://localhost:5173', 'http://localhost:5174'],
+    origin: allowedOrigins,
     methods: ['GET', 'POST'],
     credentials: true
   }
 });
 
-
 // Connect to MongoDB
 connectDB();
 
 // Middleware
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production'
-    ? [process.env.CLIENT_URL]
-    : ['http://localhost:5173', 'http://localhost:5174'],
-  credentials: true
-}));
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-const path = require('path');
 app.use('/book-covers', express.static(path.join(__dirname, '../public/book-covers')));
 
 // Setup Socket.IO handlers
 setupSocket(io);
 
-// Add before routes
+// Handle preflight requests
 app.options('*', cors({
-  origin: process.env.NODE_ENV === 'production'
-    ? [process.env.CLIENT_URL]
-    : ['http://localhost:5173', 'http://localhost:5174'],
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
 
@@ -69,7 +78,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/author', authorRoutes);
 
-// Health check route - Move this BEFORE the 404 handler
+// Health check route
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     status: 'ok',
@@ -79,36 +88,28 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// 404 handler - This should come AFTER all valid routes
+// 404 handler
 app.use((req, res) => {
   res.status(404).json({
     message: 'Route not found'
   });
 });
 
-// Error handling middleware - Keep this last
+// Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-
   if (err.name === 'ValidationError') {
     return res.status(400).json({
       message: 'Validation Error',
       errors: Object.values(err.errors).map(e => e.message)
     });
   }
-
   if (err.name === 'JsonWebTokenError') {
-    return res.status(401).json({
-      message: 'Invalid authentication token'
-    });
+    return res.status(401).json({ message: 'Invalid authentication token' });
   }
-
   if (err.name === 'TokenExpiredError') {
-    return res.status(401).json({
-      message: 'Authentication token expired'
-    });
+    return res.status(401).json({ message: 'Authentication token expired' });
   }
-
   res.status(err.status || 500).json({
     message: err.message || 'Something went wrong!',
     error: process.env.NODE_ENV === 'development' ? err.stack : undefined
